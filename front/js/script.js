@@ -1,6 +1,7 @@
 fetch("http://localhost:3000/api/products")
 .then(Response => Response.json())
 .then((items) => {
+    console.log(items)
     html = ``;
     items.forEach(item => {
         html += `<a href="./product.html?id=${item._id}">

@@ -6,7 +6,8 @@ if(params.has('id')) {
       document.getElementById('price').innerHTML = product.price;
       document.getElementById('description').innerHTML = product.description;
       document.getElementById('title').innerHTML = product.name;
-      document.getElementById('nom_produit').innerHTML = product.name;
+      document.getElementsByTagName('title')[0].innerHTML = product.name;
+      document.getElementsByClassName('item__img')[0].innerHTML = `<img src="${product.imageUrl}" alt="${product.altTxt}">`
       //button selection
       product.colors.forEach( color => {
         option = document.createElement("option");
@@ -22,6 +23,5 @@ if(params.has('id')) {
 } else {
   console.log('no id params set')
 }
-fetch ("")
   
 

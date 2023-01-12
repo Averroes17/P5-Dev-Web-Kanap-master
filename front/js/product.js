@@ -87,12 +87,10 @@ if (params.has('id')) {
   function renderCartCount() {
     const cartCount = document.getElementById('cart_count');
     cartCount.innerHTML = cart.items.length;
-
-  }
+   }
 
   //Executer fetch
   fetchProduct();
-
 
 } else {
   console.log('no id params set')

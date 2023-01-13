@@ -266,3 +266,14 @@ footer .footerSecondary {
 		width: 75%;
 	}
 }
+
+#cart_count {
+	border: 1px solid grey;
+	border-radius: 50px;
+	font-size:10px;
+	color: white;
+	background-color: black;
+	padding: 5px;
+	margin:4px;
+	width:2px
+}

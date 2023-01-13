@@ -19,8 +19,6 @@ if (params.has('id')) {
       option.value = color;
       document.getElementById('colors').add(option);
     })
-
-    console.log(product);
   }
 
   // Ajouter clic bouton
@@ -46,48 +44,6 @@ if (params.has('id')) {
 
     addToCart(item);
   });
-
-  // Créer objet panier pour stocker les articles
-  const cart = {
-    items: []
-  };
-
-  // Fonction pour ajouter un produit au panier
-  function addToCart(item) {
-    let item_exist = false;
-    if (cart) {
-      cart.items.forEach((ligne, index) => {
-        if (item.id == ligne.id && item.color == ligne.color) {
-          cart.items[index].quantity = parseInt(item.quantity) + parseInt(ligne.quantity);
-          item_exist = true;
-        }
-      });
-    }
-
-    if (!item_exist) {
-      cart.items.push(item);  // Ajouter le produit au tableau des éléments
-      alert(`${item.name} ajouté !`);  // Afficher un message à l'utilisateur indiquant que le produit a été ajouté au panier
-    } else {
-      alert(`${item.name} modifié !`);
-    }
-    saveCart();//Enregistrez le panier dans le stockage local
-    renderCartCount();
-  }
-
-  // Fonction pour enregistrer le panier dans le stockage local
-  function saveCart() {
-    const cartJson = JSON.stringify(cart);// Convertir l'objet panier en chaîne JSON
-    localStorage.setItem('cart', cartJson); // Save the cart to local storage
-  }
-
-  // Rendre le panier à la page
-  renderCartCount();
-
-  // Fonction pour rendre le panier à la page
-  function renderCartCount() {
-    const cartCount = document.getElementById('cart_count');
-    cartCount.innerHTML = cart.items.length;
-   }
 
   //Executer fetch
   fetchProduct();

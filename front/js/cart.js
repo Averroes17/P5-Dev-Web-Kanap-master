@@ -10,45 +10,44 @@ const storedItems = JSON.parse(localStorage.getItem('cart'));
 
 if(storedItems) {
     cart = storedItems;
-
     
     if( document.getElementById("cart__items") ) {
         displayCart(cart);
     }
-    
-    renderCartCount();
 }
-
-
-
 
 
 //Fontions --------------------------------
 
 // Fonction pour ajouter un produit au panier
-function addToCart(item) {
-    let item_exist = false;
-
-    // Modifier la quantité de l'article similaire ou ajouter un nouveau
-    if (cart) {
-        cart.items.forEach((ligne, index) => {
-        if (item.id == ligne.id && item.color == ligne.color) {
-            cart.items[index].quantity = parseInt(item.quantity) + parseInt(ligne.quantity);
-            item_exist = true;
+function addToCart(item) {    
+  if (item.quantity <= 10) {
+      // Modifier la quantité de l'article similaire ou ajouter un nouveau 
+        let itemIndex = cart.items.findIndex((i) => i._id === item._id && i.color === item.color);
+        if(itemIndex  != -1) {   
+            let new_quantity = parseInt(item.quantity) + parseInt(cart.items[itemIndex].quantity);
+            if(new_quantity <= 10) {
+              cart.items[itemIndex].quantity = new_quantity;
+            } else {
+              alert("Vous ne pouvez pas depasser la limite de 10 articles par produit !");
+              return;
+            }
         }
-        });
-    }
 
-    if (!item_exist) {
-        cart.items.push(item);  // Ajouter le produit au tableau des éléments
-        alert(`${item.name} ajouté !`);  // Afficher un message à l'utilisateur indiquant que le produit a été ajouté au panier
+  
+      if (itemIndex  == -1) {
+          cart.items.push(item);  // Ajouter le produit au tableau des éléments
+          alert(`${item.name} ajouté !`);  // Afficher un message à l'utilisateur indiquant que le produit a été ajouté au panier
+      } else {
+          alert(`${item.name} modifié !`);
+      }
+
+      //Enregistrez le panier dans le stockage local
+      saveCart();
+      renderCartCount();
     } else {
-        alert(`${item.name} modifié !`);
+      alert("Vous ne pouvez pas depasser la limite de 10 articles par produit !")
     }
-
-    //Enregistrez le panier dans le stockage local
-    saveCart();
-    renderCartCount();
 }
 
 // Fonction pour enregistrer le panier dans le stockage local
@@ -59,17 +58,21 @@ function saveCart() {
 
 // Fonction pour rendre le panier à la page
 function renderCartCount() {
-    let total_quantity = 0;
-    cart.items.forEach((item) => {
-        total_quantity = total_quantity + parseInt(item.quantity);
-    });
+    document.getElementById('cart_count').innerHTML = getArticlesCount();
+}
 
-    document.getElementById('cart_count').innerHTML = total_quantity;
+function getArticlesCount() {
+  let total_quantity = 0;
+  cart.items.forEach((item) => {
+      total_quantity = total_quantity + parseInt(item.quantity);
+  });
+  return total_quantity;
 }
 
 // Fonction pour afficher les articles du panier dans cart.html
 async function displayCart(cart) {
     await fetchProducts(cart);    
+    renderCartCount();
 }
 
 
@@ -79,7 +82,7 @@ async function fetchProducts(cart) {
     Promise.all(
         cart.items.map(async item => {
             try {
-                let response = await fetch(`http://localhost:3000/api/products/${item.id}`);
+                let response = await fetch(`http://localhost:3000/api/products/${item._id}`);
                 let data = await response.json();
                 
                 data.color = item.color;
@@ -119,7 +122,7 @@ function updateUI(products) {
                 <div class="cart__item__content__settings">
                   <div class="cart__item__content__settings__quantity">
                     <p>Qté : </p>
-                    <input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value="${product.quantity}">
+                    <input type="number" class="itemQuantity" name="itemQuantity" min="1" max="10" value="${product.quantity}" onChange="updateQuantity('${product._id}', '${product.color}',this.value)">
                   </div>
                   <div class="cart__item__content__settings__delete">
                     <button class="deleteItem" onclick="remove('${product._id}', '${product.color}')">Supprimer</button>
@@ -134,19 +137,32 @@ function updateUI(products) {
     document.getElementById("totalPrice").innerHTML = totalPrice;  
 }
 
+// Fonction pour retirer un produit du panier
+function remove(itemId, itemColor) {
+  // Retrouver l'element
+  let itemIndex = cart.items.findIndex(item => item._id === itemId && item.color === itemColor);
 
+  // Retirer l'element du panier
+  cart.items.splice(itemIndex, 1);
 
-  // Fonction pour retirer un produit du panier
-  function remove(itemId, itemColor) {
-    let storedCart = JSON.parse(localStorage.getItem('cart'));
-    // Retrouver l'element
-    let itemIndex = storedCart.items.findIndex(item => item._id === itemId && item.color === itemColor);
-    // Retirer l'element du panier
-    storedCart.items.splice(itemIndex, 1);
+  // Retirer l'element visuellement
+  displayCart(cart);
 
-    // Retirer l'element visuellement
-    displayCart(storedCart);
+  // Mettre a jour le local storage
+  localStorage.setItem('cart', JSON.stringify(cart));
+  
+}
 
-    // Mettre a jour le local storage
-    localStorage.setItem('cart', JSON.stringify(storedCart));
+function updateQuantity(itemId, itemColor, value){
+  if (value > 10) {    
+    alert("Vous ne pouvez pas depasser la limite de 10 articles par produit !");
+    return;
   }
+  let item = cart.items.find((i) => i._id === itemId && i.color === itemColor);
+  let itemIndex = cart.items.findIndex((i) => i._id === itemId && i.color === itemColor);
+  if (item) {
+    cart.items[itemIndex].quantity = value;
+    localStorage.setItem("cart", JSON.stringify(cart));
+    displayCart(cart);
+  }
+}

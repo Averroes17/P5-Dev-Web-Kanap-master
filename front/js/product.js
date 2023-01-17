@@ -36,7 +36,7 @@ if (params.has('id')) {
 
     //fonctionnement normal    
     let item = {
-      'id': product._id,
+      '_id': product._id,
       'name': product.name,
       'color': document.getElementById('colors').value,// Séléction couleur
       'quantity': document.getElementById('quantity').value,// Séléction Quantitité

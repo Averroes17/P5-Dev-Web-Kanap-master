@@ -1,114 +1,114 @@
 // Lors du chargement de page---------------------
 // Créer objet panier pour stocker les articles
 let cart = {
-    items: [],
+  items: [],
 };
 
 
 // Charger le contenu du localstorage
 const storedItems = JSON.parse(localStorage.getItem('cart'));
 
-if(storedItems) {
-    cart = storedItems;
-    
-    if( document.getElementById("cart__items") ) {
-        displayCart(cart);
-    }
+if (storedItems) {
+  cart = storedItems;
+
+  if (document.getElementById("cart__items")) {
+    displayCart(cart);
+  }
 }
 
 
 //Fontions --------------------------------
 
 // Fonction pour ajouter un produit au panier
-function addToCart(item) {    
-  if (item.quantity <= 10) {
-      // Modifier la quantité de l'article similaire ou ajouter un nouveau 
-        let itemIndex = cart.items.findIndex((i) => i._id === item._id && i.color === item.color);
-        if(itemIndex  != -1) {   
-            let new_quantity = parseInt(item.quantity) + parseInt(cart.items[itemIndex].quantity);
-            if(new_quantity <= 10) {
-              cart.items[itemIndex].quantity = new_quantity;
-            } else {
-              alert("Vous ne pouvez pas depasser la limite de 10 articles par produit !");
-              return;
-            }
-        }
-
-  
-      if (itemIndex  == -1) {
-          cart.items.push(item);  // Ajouter le produit au tableau des éléments
-          alert(`${item.name} ajouté !`);  // Afficher un message à l'utilisateur indiquant que le produit a été ajouté au panier
+function addToCart(item) {
+  if (item.quantity <= 100) {
+    // Modifier la quantité de l'article similaire ou ajouter un nouveau 
+    let itemIndex = cart.items.findIndex((i) => i._id === item._id && i.color === item.color);
+    if (itemIndex != -1) {
+      let new_quantity = parseInt(item.quantity) + parseInt(cart.items[itemIndex].quantity);
+      if (new_quantity <= 100) {
+        cart.items[itemIndex].quantity = new_quantity;
       } else {
-          alert(`${item.name} modifié !`);
+        alert("Vous ne pouvez pas depasser la limite de 100 articles par produit !");
+        return;
       }
-
-      //Enregistrez le panier dans le stockage local
-      saveCart();
-      renderCartCount();
-    } else {
-      alert("Vous ne pouvez pas depasser la limite de 10 articles par produit !")
     }
+
+
+    if (itemIndex == -1) {
+      cart.items.push(item);  // Ajouter le produit au tableau des éléments
+      alert(`${item.name} ajouté !`);  // Afficher un message à l'utilisateur indiquant que le produit a été ajouté au panier
+    } else {
+      alert(`${item.name} modifié !`);
+    }
+
+    //Enregistrez le panier dans le stockage local
+    saveCart();
+    renderCartCount();
+  } else {
+    alert("Vous ne pouvez pas depasser la limite de 100 articles par produit !")
+  }
 }
 
 // Fonction pour enregistrer le panier dans le stockage local
 function saveCart() {
-    const cartJson = JSON.stringify(cart);// Convertir l'objet panier en chaîne JSON
-    localStorage.setItem('cart', cartJson); // Save the cart to local storage
+  const cartJson = JSON.stringify(cart);// Convertir l'objet panier en chaîne JSON
+  localStorage.setItem('cart', cartJson); // Save the cart to local storage
 }
 
 // Fonction pour rendre le panier à la page
 function renderCartCount() {
-    document.getElementById('cart_count').innerHTML = getArticlesCount();
+  document.getElementById('cart_count').innerHTML = getArticlesCount();
 }
 
 function getArticlesCount() {
   let total_quantity = 0;
   cart.items.forEach((item) => {
-      total_quantity = total_quantity + parseInt(item.quantity);
+    total_quantity = total_quantity + parseInt(item.quantity);
   });
   return total_quantity;
 }
 
 // Fonction pour afficher les articles du panier dans cart.html
 async function displayCart(cart) {
-    await fetchProducts(cart);    
-    renderCartCount();
+  await fetchProducts(cart);
+  renderCartCount();
 }
 
 
 async function fetchProducts(cart) {
-    let cartItemsData = [];
+  let cartItemsData = [];
 
-    Promise.all(
-        cart.items.map(async item => {
-            try {
-                let response = await fetch(`http://localhost:3000/api/products/${item._id}`);
-                let data = await response.json();
-                
-                data.color = item.color;
-                data.quantity = item.quantity;
+  Promise.all(
+    cart.items.map(async item => {
+      try {
+        let response = await fetch(`http://localhost:3000/api/products/${item._id}`);
+        let data = await response.json();
 
-                cartItemsData.push(data);
-            } catch (error) {
-                console.log(error);
-            }
-        })
-    ).then(() => {
-        // Update the UI with the cartItemsData array
-        updateUI(cartItemsData);
-    });
+        data.color = item.color;
+        data.quantity = item.quantity;
+
+        cartItemsData.push(data);
+      } catch (error) {
+        console.log(error);
+      }
+    })
+  ).then(() => {
+    // Update the UI with the cartItemsData array
+    updateUI(cartItemsData);
+  });
 }
 
 function updateUI(products) {
-    let html = "";
-    let totalQuantity = 0;
-    let totalPrice = 0;
+  let html = "";
+  let totalQuantity = 0;
+  let totalPrice = 0;
 
-    products.forEach(product => {
-        totalQuantity += parseInt(product.quantity);
-        totalPrice += parseInt(product.price) * product.quantity;
+  products.forEach(product => {
+    totalQuantity += parseInt(product.quantity);
+    totalPrice += parseInt(product.price) * product.quantity;
 
-        html += `
+    html += `
             <article class="cart__item" data-id="${product._id}" data-color="${product.color}">
               <div class="cart__item__img">
                 <img src="${product.imageUrl}" alt="${product.altTxt}">
@@ -122,7 +122,7 @@ function updateUI(products) {
                 <div class="cart__item__content__settings">
                   <div class="cart__item__content__settings__quantity">
                     <p>Qté : </p>
-                    <input type="number" class="itemQuantity" name="itemQuantity" min="1" max="10" value="${product.quantity}" onChange="updateQuantity('${product._id}', '${product.color}',this.value)">
+                    <input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value="${product.quantity}" onChange="updateQuantity('${product._id}', '${product.color}',this.value)">
                   </div>
                   <div class="cart__item__content__settings__delete">
                     <button class="deleteItem" onclick="remove('${product._id}', '${product.color}')">Supprimer</button>
@@ -130,11 +130,11 @@ function updateUI(products) {
                 </div>
               </div>
             </article>`;
-    });
+  });
 
-    document.getElementById("cart__items").innerHTML = html;     
-    document.getElementById("totalQuantity").innerHTML = totalQuantity;  
-    document.getElementById("totalPrice").innerHTML = totalPrice;  
+  document.getElementById("cart__items").innerHTML = html;
+  document.getElementById("totalQuantity").innerHTML = totalQuantity;
+  document.getElementById("totalPrice").innerHTML = totalPrice;
 }
 
 // Fonction pour retirer un produit du panier
@@ -150,12 +150,11 @@ function remove(itemId, itemColor) {
 
   // Mettre a jour le local storage
   localStorage.setItem('cart', JSON.stringify(cart));
-  
 }
 
-function updateQuantity(itemId, itemColor, value){
-  if (value > 10) {    
-    alert("Vous ne pouvez pas depasser la limite de 10 articles par produit !");
+function updateQuantity(itemId, itemColor, value) {
+  if (value > 100) {
+    alert("Vous ne pouvez pas depasser la limite de 100 articles par produit !");
     return;
   }
   let item = cart.items.find((i) => i._id === itemId && i.color === itemColor);
@@ -165,4 +164,87 @@ function updateQuantity(itemId, itemColor, value){
     localStorage.setItem("cart", JSON.stringify(cart));
     displayCart(cart);
   }
+}
+
+
+const form = document.querySelector('form');
+form.addEventListener('submit', function (event) {
+  event.preventDefault();
+
+  // Constituer objet contact  firstName,lastName, address, city et email. -- Done
+    
+  // Créer objet contact pour stocker les informations du client
+  let contact = {
+    firstName: form.querySelector('input[name="firstName"]').value,
+    lastName: form.querySelector('input[name="lastName"]').value,
+    address: form.querySelector('input[name="address"]').value,
+    city: form.querySelector('input[name="city"]').value,
+    email: form.querySelector('input[name="email"]').value,
+  };
+
+  if(validate(contact)) {
+    // Constituer tableau de produits [ID1 , ID2, ID3]
+    let products = getProductIds();
+
+    let body = {
+      contact: contact,
+      products: products
+    }
+
+    sendOrder(body);
+    //form.submit();
+  }
+});
+
+function validate(contact) {
+  const emailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+  const specialChars = /[^a-zA-Z]/g;
+  const cityChars = /[^a-zA-Z ]/g;
+  const addressRegex = /[^a-zA-Z0-9,. ]/g;
+  if (contact.firstName.match(specialChars)) {
+    document.querySelector("#firstNameErrorMsg").innerHTML = "Le champs Prenom est incorrect.";
+    return false;
+  }
+
+  if(contact.lastName.match(specialChars)) {
+    document.querySelector("#lastNameErrorMsg").innerHTML =  "Le champs Nom est incorrect.";
+    return false;
+  }
+  
+  if(contact.city.match(cityChars)) {
+    alert("Le champs Ville est incorrect.");
+    return false;
+  }
+  
+  if(!emailRegex.test(contact.email)){
+    alert("Le champs Email est incorrect.");
+    return false;
+  }
+  
+  if(contact.address.match(addressRegex)) {
+    alert("Le champs Adresse est incorrect.");
+    return false;
+  } 
+
+  return true;
+} 
+
+function getProductIds() {  
+  let cart = JSON.parse(localStorage.getItem('cart'));
+  product_ids = cart.items.map((item) => item._id);
+  return product_ids;
+}
+
+async function sendOrder(body) {
+  // Envoyer la requete de creation de commande
+  let response = await fetch('http://localhost:3000/api/order', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json;charset=utf-8'
+    },
+    body: JSON.stringify(body)
+  });
+  
+  let result = await response.json();
+  alert(result.message); 
 }

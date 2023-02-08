@@ -245,6 +245,13 @@ async function sendOrder(body) {
     body: JSON.stringify(body)
   });
   
-  let result = await response.json();
-  alert(result.message); 
+  let data = await response.json();
+
+  //c'ést tout ce que j'ai ajouté depuis la derniere fois tu peux supprimer l'enregistrement en cours 
+  if (data.orderId) {
+    window.location.replace(`confirmation.html?orderId=${data.orderId}`); //je passe orderId en url
+  }
+  //c'ést tout ce que j'ai ajouté depuis la derniere fois tu peux supprimer l'enregistrement en cours 
+  
+  //console.log(data); 
 }

@@ -211,21 +211,21 @@ function validate(contact) {
     return false;
   }
   
+  if(contact.address.match(addressRegex)) {
+    document.querySelector("#adressErrorMsg").innerHTML =  "Le champs Adresse est incorrect.";
+    return false;
+  } 
+
   if(contact.city.match(cityChars)) {
-    alert("Le champs Ville est incorrect.");
+    document.querySelector("#cityErrorMsg").innerHTML = "Le champs Ville est incorrect.";
     return false;
   }
   
   if(!emailRegex.test(contact.email)){
-    alert("Le champs Email est incorrect.");
+    document.querySelector("#emailErrorMsg").innerHTML = "Le champs Email est incorrect.";
     return false;
   }
   
-  if(contact.address.match(addressRegex)) {
-    alert("Le champs Adresse est incorrect.");
-    return false;
-  } 
-
   return true;
 } 
 

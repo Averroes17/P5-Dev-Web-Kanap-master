@@ -21,17 +21,19 @@ if (storedItems) {
 
 // Fonction pour ajouter un produit au panier
 function addToCart(item) {
-  if (item.quantity <= 100) {
+  if ((item.quantity <= 100) && (item.quantity > 0)) {
     // Modifier la quantité de l'article similaire ou ajouter un nouveau 
     let itemIndex = cart.items.findIndex((i) => i._id === item._id && i.color === item.color);
     if (itemIndex != -1) {
       let new_quantity = parseInt(item.quantity) + parseInt(cart.items[itemIndex].quantity);
-      if (new_quantity <= 100) {
+      if ((new_quantity <= 100) && (new_quantity > 0)) {
         cart.items[itemIndex].quantity = new_quantity;
       } else {
         alert("Vous ne pouvez pas depasser la limite de 100 articles par produit !");
         return;
       }
+    
+      
     }
 
 
@@ -115,14 +117,14 @@ function updateUI(products) {
               </div>
               <div class="cart__item__content">
                 <div class="cart__item__content__description">
-                  <h2>>${product.name}</h2>
-                  <p>>${product.color}</p>
-                  <p>>${product.price} €</p>
+                  <h2>${product.name}</h2>
+                  <p>${product.color}</p>
+                  <p>${product.price} €</p>
                 </div>
                 <div class="cart__item__content__settings">
                   <div class="cart__item__content__settings__quantity">
                     <p>Qté : </p>
-                    <input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value="${product.quantity}" onChange="updateQuantity('${product._id}', '${product.color}',this.value)">
+                    <input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value="${product.quantity}" onChange="updateQuantity('${product._id}', '${product.color}', this)">
                   </div>
                   <div class="cart__item__content__settings__delete">
                     <button class="deleteItem" onclick="remove('${product._id}', '${product.color}')">Supprimer</button>
@@ -152,15 +154,16 @@ function remove(itemId, itemColor) {
   localStorage.setItem('cart', JSON.stringify(cart));
 }
 
-function updateQuantity(itemId, itemColor, value) {
-  if (value > 100) {
-    alert("Vous ne pouvez pas depasser la limite de 100 articles par produit !");
+function updateQuantity(itemId, itemColor, element) {
+  if ((element.value > 100) || (element.value < 1)) {
+    element.value = 1;
+    alert("Vous devez rajouter au moins un produit avec une limite de 100 articles par produit !");
     return;
   }
   let item = cart.items.find((i) => i._id === itemId && i.color === itemColor);
   let itemIndex = cart.items.findIndex((i) => i._id === itemId && i.color === itemColor);
   if (item) {
-    cart.items[itemIndex].quantity = value;
+    cart.items[itemIndex].quantity = element.value;
     localStorage.setItem("cart", JSON.stringify(cart));
     displayCart(cart);
   }
@@ -198,9 +201,10 @@ form.addEventListener('submit', function (event) {
 
 function validate(contact) {
   const emailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-  const specialChars = /[^a-zA-Z]/g;
-  const cityChars = /[^a-zA-Z ]/g;
-  const addressRegex = /[^a-zA-Z0-9,. ]/g;
+  const specialChars = /^(([^a-zA-Z ])+([a-zàáâãäåçèéêëìíîïðòóôõöùúûüýÿ][a-zàáâãäåçèéêëìíîïðòóôõöùúûüýÿ\' -]))/g
+  const cityChars = /[^a-zA-ZÀ-ÿ ]/g;
+  const addressRegex = /[^a-zA-Z0-9À-ÿ,. ]/g
+
   if (contact.firstName.match(specialChars)) {
     document.querySelector("#firstNameErrorMsg").innerHTML = "Le champs Prenom est incorrect.";
     return false;
@@ -237,7 +241,7 @@ function getProductIds() {
 
 async function sendOrder(body) {
   // Envoyer la requete de creation de commande
-  let response = await fetch('http://localhost:3000/api/order', {
+  let response = await fetch('http://localhost:3000/api/products/order', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json;charset=utf-8'
@@ -249,6 +253,7 @@ async function sendOrder(body) {
 
 
   if (data.orderId) {
+    localStorage.removeItem('cart');
     window.location.replace(`confirmation.html?orderId=${data.orderId}`); //je passe orderId en url
   }
 

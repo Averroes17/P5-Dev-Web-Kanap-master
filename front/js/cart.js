@@ -157,9 +157,9 @@ function remove(itemId, itemColor) {
 function updateQuantity(itemId, itemColor, element) {
   if ((element.value > 100) || (element.value < 1)) {
     element.value = 1;
-    alert("Vous devez rajouter au moins un produit avec une limite de 100 articles par produit !");
-    return;
+    alert("Vous devez rajouter au moins un produit avec une limite de 100 articles par produit !");    
   }
+
   let item = cart.items.find((i) => i._id === itemId && i.color === itemColor);
   let itemIndex = cart.items.findIndex((i) => i._id === itemId && i.color === itemColor);
   if (item) {
@@ -167,8 +167,7 @@ function updateQuantity(itemId, itemColor, element) {
     localStorage.setItem("cart", JSON.stringify(cart));
     displayCart(cart);
   }
-}
-
+}               
 
 const form = document.querySelector('form');
 form.addEventListener('submit', function (event) {
@@ -188,12 +187,10 @@ form.addEventListener('submit', function (event) {
   if(validate(contact)) {
     // Constituer tableau de produits [ID1 , ID2, ID3]
     let products = getProductIds();
-
     let body = {
       contact: contact,
       products: products
     }
-
     sendOrder(body);
     //form.submit();
   }

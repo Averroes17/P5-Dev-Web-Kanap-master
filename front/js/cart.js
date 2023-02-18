@@ -198,8 +198,8 @@ form.addEventListener('submit', function (event) {
 
 function validate(contact) {
   const emailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-  const specialChars = /^(([^a-zA-Z ])+([a-zàáâãäåçèéêëìíîïðòóôõöùúûüýÿ][a-zàáâãäåçèéêëìíîïðòóôõöùúûüýÿ\' -]))/g
-  const cityChars = /[^a-zA-ZÀ-ÿ ]/g;
+  const specialChars = /[^a-zA-ZÀ-ÿ]/g
+  const cityChars = /[^a-zA-ZÀ-ÿ 0-9]/g;
   const addressRegex = /[^a-zA-Z0-9À-ÿ,. ]/g
 
   if (contact.firstName.match(specialChars)) {

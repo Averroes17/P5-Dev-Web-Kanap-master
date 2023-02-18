@@ -199,8 +199,8 @@ form.addEventListener('submit', function (event) {
 function validate(contact) {
   const emailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
   const specialChars = /[^a-zA-ZÀ-ÿ]/g
+  const addressRegex = /[^a-zA-ZÀ-ÿ 0-9]/g;
   const cityChars = /[^a-zA-ZÀ-ÿ 0-9]/g;
-  const addressRegex = /[^a-zA-Z0-9À-ÿ,. ]/g
 
   if (contact.firstName.match(specialChars)) {
     document.querySelector("#firstNameErrorMsg").innerHTML = "Le champs Prenom est incorrect.";
@@ -211,9 +211,9 @@ function validate(contact) {
     document.querySelector("#lastNameErrorMsg").innerHTML =  "Le champs Nom est incorrect.";
     return false;
   }
-  
+   
   if(contact.address.match(addressRegex)) {
-    document.querySelector("#adressErrorMsg").innerHTML =  "Le champs Adresse est incorrect.";
+    document.querySelector("#addressErrorMsg").innerHTML =  "Le champs Adresse est incorrect.";
     return false;
   } 
 
@@ -221,7 +221,7 @@ function validate(contact) {
     document.querySelector("#cityErrorMsg").innerHTML = "Le champs Ville est incorrect.";
     return false;
   }
-  
+
   if(!emailRegex.test(contact.email)){
     document.querySelector("#emailErrorMsg").innerHTML = "Le champs Email est incorrect.";
     return false;

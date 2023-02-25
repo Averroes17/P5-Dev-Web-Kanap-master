@@ -1,13 +1,10 @@
-// Lors du chargement de page---------------------
-// Créer objet panier pour stocker les articles
+// Création panier
 let cart = {
   items: [],
 };
 
-
-// Charger le contenu du localstorage
+// récuperation données du localstorage
 const storedItems = JSON.parse(localStorage.getItem('cart'));
-
 if (storedItems) {
   cart = storedItems;
 
@@ -16,49 +13,40 @@ if (storedItems) {
   }
 }
 
-
-//Fontions --------------------------------
-
-// Fonction pour ajouter un produit au panier
+// ajouter un produit au panier
 function addToCart(item) {
-  if ((item.quantity <= 100) && (item.quantity > 0)) {
-    // Modifier la quantité de l'article similaire ou ajouter un nouveau 
+  if ((item.quantity > 100) || (item.quantity < 0)) {
+    alert("Vous ne pouvez pas depasser la limite de 100 articles par produit !")
+    return;
+  }
     let itemIndex = cart.items.findIndex((i) => i._id === item._id && i.color === item.color);
     if (itemIndex != -1) {
-      let new_quantity = parseInt(item.quantity) + parseInt(cart.items[itemIndex].quantity);
+      let new_quantity = parseInt(item.quantity) + parseInt(cart.items[itemIndex].quantity); //existe
       if ((new_quantity <= 100) && (new_quantity > 0)) {
         cart.items[itemIndex].quantity = new_quantity;
+        alert(`${item.name} modifié !`)
       } else {
         alert("Vous ne pouvez pas depasser la limite de 100 articles par produit !");
         return;
       }
-    
-      
     }
-
-
     if (itemIndex == -1) {
-      cart.items.push(item);  // Ajouter le produit au tableau des éléments
-      alert(`${item.name} ajouté !`);  // Afficher un message à l'utilisateur indiquant que le produit a été ajouté au panier
-    } else {
-      alert(`${item.name} modifié !`);
-    }
+      cart.items.push(item);  // Ajouter le produit
+      alert(`${item.name} ajouté !`); 
+    } 
 
-    //Enregistrez le panier dans le stockage local
+    //Enregistrez LS
     saveCart();
     renderCartCount();
-  } else {
-    alert("Vous ne pouvez pas depasser la limite de 100 articles par produit !")
-  }
 }
 
-// Fonction pour enregistrer le panier dans le stockage local
+
 function saveCart() {
-  const cartJson = JSON.stringify(cart);// Convertir l'objet panier en chaîne JSON
-  localStorage.setItem('cart', cartJson); // Save the cart to local storage
+  const cartJson = JSON.stringify(cart);
+  localStorage.setItem('cart', cartJson); // Save to local storage
 }
 
-// Fonction pour rendre le panier à la page
+//Quantité à côté du panier
 function renderCartCount() {
   document.getElementById('cart_count').innerHTML = getArticlesCount();
 }
@@ -71,12 +59,11 @@ function getArticlesCount() {
   return total_quantity;
 }
 
-// Fonction pour afficher les articles du panier dans cart.html
+// Fonction pour afficher les articles du panier 
 async function displayCart(cart) {
   await fetchProducts(cart);
   renderCartCount();
 }
-
 
 async function fetchProducts(cart) {
   let cartItemsData = [];
@@ -96,10 +83,10 @@ async function fetchProducts(cart) {
       }
     })
   ).then(() => {
-    // Update the UI with the cartItemsData array
     updateUI(cartItemsData);
   });
 }
+
 
 function updateUI(products) {
   let html = "";
@@ -141,17 +128,11 @@ function updateUI(products) {
 
 // Fonction pour retirer un produit du panier
 function remove(itemId, itemColor) {
-  // Retrouver l'element
-  let itemIndex = cart.items.findIndex(item => item._id === itemId && item.color === itemColor);
-
-  // Retirer l'element du panier
-  cart.items.splice(itemIndex, 1);
-
-  // Retirer l'element visuellement
+  
+  let itemIndex = cart.items.findIndex(item => item._id === itemId && item.color === itemColor);// Retrouver 
+  cart.items.splice(itemIndex, 1);  // Retirer panier
   displayCart(cart);
-
-  // Mettre a jour le local storage
-  localStorage.setItem('cart', JSON.stringify(cart));
+  localStorage.setItem('cart', JSON.stringify(cart));// Mis a jour du LS
 }
 
 function updateQuantity(itemId, itemColor, element) {
@@ -183,9 +164,8 @@ form.addEventListener('submit', function (event) {
     city: form.querySelector('input[name="city"]').value,
     email: form.querySelector('input[name="email"]').value,
   };
-
+  
   if(validate(contact)) {
-    // Constituer tableau de produits [ID1 , ID2, ID3]
     let products = getProductIds();
     let body = {
       contact: contact,
@@ -228,7 +208,7 @@ function validate(contact) {
   }
   
   return true;
-} 
+}
 
 function getProductIds() {  
   let cart = JSON.parse(localStorage.getItem('cart'));

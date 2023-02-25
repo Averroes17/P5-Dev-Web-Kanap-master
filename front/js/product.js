@@ -3,6 +3,8 @@ const params = new URLSearchParams(window.location.search);
 if (params.has('id')) {
 
   let product;
+  fetchProduct(); //fonction d'appel du produit et intégration dans la page
+
   async function fetchProduct() {
     const response = await fetch(`http://localhost:3000/api/products/${params.get('id')}`);
     product = await response.json();
@@ -21,10 +23,9 @@ if (params.has('id')) {
     })
   }
 
-  // Ajouter clic bouton
+  // clic bouton
   document.getElementById('addToCart').addEventListener('click', () => {
-    //Conditions Ajouter
-    if (document.getElementById('colors').value == '') {
+       if (document.getElementById('colors').value == '') {
       alert("choisissez une couleur !")
       return
     }
@@ -33,8 +34,8 @@ if (params.has('id')) {
       alert("Ajoutez une quantité !")
       return
     }
-
-    //fonctionnement normal    
+    
+    //validé       
     let item = {
       '_id': product._id,
       'name': product.name,
@@ -45,8 +46,6 @@ if (params.has('id')) {
     addToCart(item);
   });
 
-  //Executer fetch
-  fetchProduct();
 
 } else {
   console.log('no id params set')

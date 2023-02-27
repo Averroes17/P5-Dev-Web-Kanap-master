@@ -155,24 +155,24 @@ function validate(contact) {
  
   let valide = true;
 
-  if (contact.firstName.match(specialChars)) {
+  if (contact.firstName.match(specialChars) || !contact.firstName) {
     document.querySelector("#firstNameErrorMsg").innerHTML = "Le champ Prénom est incorrect.";
     valide = false;
   }
 
-  if(contact.lastName.match(specialChars)) {
+  if(contact.lastName.match(specialChars) || !contact.lastName ) {
     document.querySelector("#lastNameErrorMsg").innerHTML =  "Le champ Nom est incorrect.";
     valide = false;
   }
    
-  if(contact.address.match(addressRegex)) {
+  if(contact.address.match(addressRegex)|| !contact.address) {
     document.querySelector("#addressErrorMsg").innerHTML =  "Le champ Adresse est incorrect.";
     valide = false;
   } 
 
-  if(contact.city.match(cityChars)) {
+  if(contact.city.match(cityChars)|| !contact.city) {
     document.querySelector("#cityErrorMsg").innerHTML = "Le champ Ville est incorrect.";
-    error = false;
+    valide = false;
   }
 
   if(!emailRegex.test(contact.email)){

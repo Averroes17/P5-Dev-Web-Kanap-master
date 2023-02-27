@@ -47,6 +47,40 @@ if (params.has('id')) {
   });
 
 
+  // ajouter un produit au panier
+
+  function addToCart(item) {
+    if ((item.quantity > 100) || (item.quantity < 0)) {
+      alert("Vous ne pouvez pas depasser la limite de 100 articles par produit !")
+      return;
+    }
+      let itemIndex = cart.items.findIndex((i) => i._id === item._id && i.color === item.color);
+      if (itemIndex != -1) {
+        let new_quantity = parseInt(item.quantity) + parseInt(cart.items[itemIndex].quantity); //existe
+        if ((new_quantity <= 100) && (new_quantity > 0)) {
+          cart.items[itemIndex].quantity = new_quantity;
+          alert(`${item.name} modifié !`)
+        } else {
+          alert("Vous ne pouvez pas depasser la limite de 100 articles par produit !");
+          return;
+        }
+      }
+      if (itemIndex == -1) {
+        cart.items.push(item);  // Ajouter le produit
+        alert(`${item.name} ajouté !`); 
+      } 
+  
+      //Enregistrez LS
+      saveCart();
+      renderCartCount();
+  }
+
+  function saveCart() {
+    const cartJson = JSON.stringify(cart);
+    localStorage.setItem('cart', cartJson); // Save to local storage
+  }
+
+  
 } else {
   console.log('no id params set')
 }

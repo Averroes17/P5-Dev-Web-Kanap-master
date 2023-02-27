@@ -1,9 +1,8 @@
-// Création panier
 let cart = {
   items: [],
 };
 
-// récuperation données du localstorage
+// récuperation données du LS
 const storedItems = JSON.parse(localStorage.getItem('cart'));
 if (storedItems) {
   cart = storedItems;
@@ -11,39 +10,6 @@ if (storedItems) {
   if (document.getElementById("cart__items")) {
     displayCart(cart);
   }
-}
-
-// ajouter un produit au panier
-function addToCart(item) {
-  if ((item.quantity > 100) || (item.quantity < 0)) {
-    alert("Vous ne pouvez pas depasser la limite de 100 articles par produit !")
-    return;
-  }
-    let itemIndex = cart.items.findIndex((i) => i._id === item._id && i.color === item.color);
-    if (itemIndex != -1) {
-      let new_quantity = parseInt(item.quantity) + parseInt(cart.items[itemIndex].quantity); //existe
-      if ((new_quantity <= 100) && (new_quantity > 0)) {
-        cart.items[itemIndex].quantity = new_quantity;
-        alert(`${item.name} modifié !`)
-      } else {
-        alert("Vous ne pouvez pas depasser la limite de 100 articles par produit !");
-        return;
-      }
-    }
-    if (itemIndex == -1) {
-      cart.items.push(item);  // Ajouter le produit
-      alert(`${item.name} ajouté !`); 
-    } 
-
-    //Enregistrez LS
-    saveCart();
-    renderCartCount();
-}
-
-
-function saveCart() {
-  const cartJson = JSON.stringify(cart);
-  localStorage.setItem('cart', cartJson); // Save to local storage
 }
 
 //Quantité à côté du panier
@@ -59,7 +25,7 @@ function getArticlesCount() {
   return total_quantity;
 }
 
-// Fonction pour afficher les articles du panier 
+// Afficher les articles du panier 
 async function displayCart(cart) {
   await fetchProducts(cart);
   renderCartCount();
@@ -86,7 +52,6 @@ async function fetchProducts(cart) {
     updateUI(cartItemsData);
   });
 }
-
 
 function updateUI(products) {
   let html = "";
@@ -126,13 +91,12 @@ function updateUI(products) {
   document.getElementById("totalPrice").innerHTML = totalPrice;
 }
 
-// Fonction pour retirer un produit du panier
+// Retouver et retirer un produit du panier
 function remove(itemId, itemColor) {
-  
-  let itemIndex = cart.items.findIndex(item => item._id === itemId && item.color === itemColor);// Retrouver 
-  cart.items.splice(itemIndex, 1);  // Retirer panier
+  let itemIndex = cart.items.findIndex(item => item._id === itemId && item.color === itemColor);
+  cart.items.splice(itemIndex, 1);  
   displayCart(cart);
-  localStorage.setItem('cart', JSON.stringify(cart));// Mis a jour du LS
+  localStorage.setItem('cart', JSON.stringify(cart));// MJ
 }
 
 function updateQuantity(itemId, itemColor, element) {
@@ -182,33 +146,43 @@ function validate(contact) {
   const addressRegex = /[^a-zA-ZÀ-ÿ 0-9]/g;
   const cityChars = /[^a-zA-ZÀ-ÿ 0-9]/g;
 
+  // effacer les messages d'erreur précédents
+  document.querySelector("#firstNameErrorMsg").innerHTML = "";
+  document.querySelector("#lastNameErrorMsg").innerHTML = "";
+  document.querySelector("#addressErrorMsg").innerHTML = "";
+  document.querySelector("#cityErrorMsg").innerHTML = "";
+  document.querySelector("#emailErrorMsg").innerHTML = "";
+ 
+  let valide = true;
+
   if (contact.firstName.match(specialChars)) {
-    document.querySelector("#firstNameErrorMsg").innerHTML = "Le champs Prenom est incorrect.";
-    return false;
+    document.querySelector("#firstNameErrorMsg").innerHTML = "Le champ Prénom est incorrect.";
+    valide = false;
   }
 
   if(contact.lastName.match(specialChars)) {
-    document.querySelector("#lastNameErrorMsg").innerHTML =  "Le champs Nom est incorrect.";
-    return false;
+    document.querySelector("#lastNameErrorMsg").innerHTML =  "Le champ Nom est incorrect.";
+    valide = false;
   }
    
   if(contact.address.match(addressRegex)) {
-    document.querySelector("#addressErrorMsg").innerHTML =  "Le champs Adresse est incorrect.";
-    return false;
+    document.querySelector("#addressErrorMsg").innerHTML =  "Le champ Adresse est incorrect.";
+    valide = false;
   } 
 
   if(contact.city.match(cityChars)) {
-    document.querySelector("#cityErrorMsg").innerHTML = "Le champs Ville est incorrect.";
-    return false;
+    document.querySelector("#cityErrorMsg").innerHTML = "Le champ Ville est incorrect.";
+    error = false;
   }
 
   if(!emailRegex.test(contact.email)){
-    document.querySelector("#emailErrorMsg").innerHTML = "Le champs Email est incorrect.";
-    return false;
+    document.querySelector("#emailErrorMsg").innerHTML = "Le champ Email est incorrect.";
+    valide = false;
   }
-  
-  return true;
+
+  return valide;
 }
+
 
 function getProductIds() {  
   let cart = JSON.parse(localStorage.getItem('cart'));

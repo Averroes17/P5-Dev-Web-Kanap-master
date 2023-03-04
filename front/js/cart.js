@@ -164,13 +164,13 @@ function validate(contact) {
     document.querySelector("#lastNameErrorMsg").innerHTML =  "Le champ Nom est incorrect.";
     valide = false;
   }
-   
-  if(contact.address.match(addressRegex)|| !contact.address) {
+
+  if(contact.address.match(addressRegex) || !contact.address) {
     document.querySelector("#addressErrorMsg").innerHTML =  "Le champ Adresse est incorrect.";
     valide = false;
   } 
 
-  if(contact.city.match(cityChars)|| !contact.city) {
+  if(contact.city.match(cityChars) || !contact.city) {
     document.querySelector("#cityErrorMsg").innerHTML = "Le champ Ville est incorrect.";
     valide = false;
   }

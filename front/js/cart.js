@@ -12,23 +12,10 @@ if (storedItems) {
   }
 }
 
-//Quantité à côté du panier
-function renderCartCount() {
-  document.getElementById('cart_count').innerHTML = getArticlesCount();
-}
-
-function getArticlesCount() {
-  let total_quantity = 0;
-  cart.items.forEach((item) => {
-    total_quantity = total_quantity + parseInt(item.quantity);
-  });
-  return total_quantity;
-}
-
 // Afficher les articles du panier 
 async function displayCart(cart) {
   await fetchProducts(cart);
-  renderCartCount();
+  
 }
 
 async function fetchProducts(cart) {
@@ -182,7 +169,6 @@ function validate(contact) {
 
   return valide;
 }
-
 
 function getProductIds() {  
   let cart = JSON.parse(localStorage.getItem('cart'));
